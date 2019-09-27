@@ -47,13 +47,3 @@ RUN sed -i 's/^#\?[[:space:]]*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/
 RUN mkdir /run/sshd
 RUN chmod 755 /run/sshd
 CMD [ "/usr/sbin/sshd", "-D" ]
-
-# ENV container docker
-# VOLUME [ "/sys/fs/cgroup" ]
-# VOLUME [ "/sys/fs/cgroup/systemd" ]
-# RUN ${APT} install systemd
-
-# # defaut operation for this container: start systemd init, which will start ssh
-# CMD [ "/sbin/init", "verbose", "systemd.unified_cgroup_hierarchy=false" ]
-
-# should rm a lot of things to save space...
