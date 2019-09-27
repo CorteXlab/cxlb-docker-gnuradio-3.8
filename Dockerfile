@@ -1,12 +1,59 @@
-FROM debian:stretch
+FROM debian:buster
 
-RUN apt-get update && apt-get -y dist-upgrade
+ENV APT="apt-get -y"
+
+RUN ${APT} update && ${APT} dist-upgrade
+
+WORKDIR /root
 
 COPY cxlb-build-toolchain.git cxlb-build-toolchain.git
 
-RUN apt-get -y install libfontconfig1-dev libxrender-dev libpulse-dev swig g++ automake autoconf libtool python-dev libfftw3-dev libcppunit-dev libboost-all-dev libusb-dev libusb-1.0-0-dev fort77 libsdl1.2-dev python-wxgtk3.0 libqt4-dev python-numpy ccache python-opengl libgsl0-dev python-cheetah python-lxml qt4-dev-tools libqwt5-qt4-dev libqwtplot3d-qt4-dev pyqt4-dev-tools python-qwt5-qt4 cmake git-core wget libxi-dev python-docutils gtk2-engines-pixbuf r-base-dev python-tk liborc-0.4-0 liborc-0.4-dev libasound2-dev python-gtk2 libportaudio2 portaudio19-dev ca-certificates xalan libpcap0.8-dev libmpfr4 libgmp10 expect fxload python-mako python3-mako libcomedi-dev liblog4cpp5-dev python-requests libitpp-dev libzmq5-dev python3-requests python3-numpy libgps-dev python-six python3-six python3-setuptools
+ENV BUILD="cxlb-build-toolchain.git/cxlb-build-toolchain -as"
+ENV PARMS="cxlb_toolchain_build /cortexlab/toolchains/current"
 
-RUN apt-get -y install nodejs python-jinja2 python-dateutil python-yaml python-packaging python-tornado python-futures python-pandas python-psutil python-pip
-RUN pip install bokeh
+# build toolchain (separate build steps to benefit from docker cache in case of build issues on a specific module)
 
-RUN cxlb-build-toolchain.git/cxlb-build-toolchain -pcs "uhd rtl-sdr gnuradio gr-iqbal bladerf hackrf uhd-firmware fft-web gr-ofdm gr-bokehgui gr-osmosdr" cxlb_toolchain_build /cortexlab/toolchains/current
+RUN ${BUILD} uhd ${PARMS}
+RUN ${BUILD} uhd-firmware ${PARMS}
+# RUN ${BUILD} rtl-sdr ${PARMS}
+# RUN ${BUILD} bladerf ${PARMS}
+# RUN ${BUILD} hackrf ${PARMS}
+RUN ${BUILD} gnuradio ${PARMS}
+# RUN ${BUILD} pluto ${PARMS}
+RUN ${BUILD} gr-bokehgui ${PARMS}
+RUN ${BUILD} gr-iqbal ${PARMS}
+# RUN ${BUILD} gr-ofdm ${PARMS}
+# RUN ${BUILD} gr-osmosdr ${PARMS}
+# RUN ${BUILD} fft-web ${PARMS}
+# RUN ${BUILD} xilinx ${PARMS}
+# RUN ${BUILD} xilinx-usb-driver ${PARMS}
+# RUN ${BUILD} digilent ${PARMS}
+# RUN ${BUILD} nutaq ${PARMS}
+# RUN ${BUILD} gr-cortexlab ${PARMS}
+
+# activate toolchain configuration
+RUN /cortexlab/toolchains/current/bin/cxlb-toolchain-system-conf
+RUN echo source /cortexlab/toolchains/current/bin/cxlb-toolchain-user-conf >> /etc/profile
+
+# set an empty password for root
+RUN sed -i -e 's%root:\*:%root:$6$fEFUE2YaNmTEH51Z$1xRO8/ytEYIo10ajp4NZSsoxhCe1oPLIyjDjqSOujaPZXFQxSSxu8LDHNwbPiLSjc.8u0Y0wEqYkBEEc5/QN5/:%' /etc/shadow
+
+# install ssh server, listening on port 2222
+RUN ${APT} install openssh-server
+RUN sed -i 's/^#\?[[:space:]]*Port 22$/Port 2222/' /etc/ssh/sshd_config
+RUN sed -i 's/^#\?[[:space:]]*PermitEmptyPasswords no$/PermitEmptyPasswords yes/' /etc/ssh/sshd_config
+RUN sed -i 's/^#\?[[:space:]]*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+RUN mkdir /run/sshd
+RUN chmod 755 /run/sshd
+CMD [ "/usr/sbin/sshd", "-D" ]
+
+# ENV container docker
+# VOLUME [ "/sys/fs/cgroup" ]
+# VOLUME [ "/sys/fs/cgroup/systemd" ]
+# RUN ${APT} install systemd
+
+# # defaut operation for this container: start systemd init, which will start ssh
+# CMD [ "/sbin/init", "verbose", "systemd.unified_cgroup_hierarchy=false" ]
+
+# should rm a lot of things to save space...
