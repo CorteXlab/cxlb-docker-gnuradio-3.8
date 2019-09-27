@@ -31,6 +31,9 @@ RUN ${BUILD} gr-iqbal ${PARMS}
 # RUN ${BUILD} nutaq ${PARMS}
 # RUN ${BUILD} gr-cortexlab ${PARMS}
 
+# remove toolchain sources
+RUN rm -rf cxlb_toolchain_build/
+
 # activate toolchain configuration
 RUN /cortexlab/toolchains/current/bin/cxlb-toolchain-system-conf
 RUN echo source /cortexlab/toolchains/current/bin/cxlb-toolchain-user-conf >> /etc/profile
