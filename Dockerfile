@@ -6,7 +6,6 @@ RUN ${APT} update && ${APT} dist-upgrade
 
 WORKDIR /root
 
-COPY cxlb-build-toolchain.git cxlb-build-toolchain.git
 # set an empty password for root
 RUN sed -i -e 's%root:\*:%root:$6$fEFUE2YaNmTEH51Z$1xRO8/ytEYIo10ajp4NZSsoxhCe1oPLIyjDjqSOujaPZXFQxSSxu8LDHNwbPiLSjc.8u0Y0wEqYkBEEc5/QN5/:%' /etc/shadow
 
@@ -18,6 +17,10 @@ RUN sed -i 's/^#\?[[:space:]]*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/
 RUN mkdir /run/sshd
 RUN chmod 755 /run/sshd
 CMD [ "/usr/sbin/sshd", "-D" ]
+
+#COPY cxlb-build-toolchain.git cxlb-build-toolchain.git
+RUN ${APT} install git
+RUN git clone https://github.com/CorteXlab/cxlb-build-toolchain.git cxlb-build-toolchain.git
 
 ENV BUILD="cxlb-build-toolchain.git/cxlb-build-toolchain -y /usr/bin/python3 -as"
 ENV PARMS="cxlb_toolchain_build /cortexlab/toolchains/current"

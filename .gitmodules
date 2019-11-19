@@ -1,3 +1,0 @@
-[submodule "cxlb-build-toolchain.git"]
-	path = cxlb-build-toolchain.git
-	url = https://github.com/CorteXlab/cxlb-build-toolchain.git
