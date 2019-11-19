@@ -12,7 +12,7 @@ quick howto
 
 - create and start a container:
 
-    docker run -dti --privileged --net=host cxlb-toolchain
+    docker run -dti --net=host cxlb-toolchain
 
 - then connect to this container with ssh:
 
