@@ -16,19 +16,15 @@ RUN sed -i 's/^#\?[[:space:]]*PermitEmptyPasswords no$/PermitEmptyPasswords yes/
 RUN sed -i 's/^#\?[[:space:]]*PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
 RUN mkdir /run/sshd
 RUN chmod 755 /run/sshd
-CMD [ "/usr/sbin/sshd", "-D" ]
 
-#COPY cxlb-build-toolchain.git cxlb-build-toolchain.git
+# cxlb-build-toolchain.git
 RUN ${APT} install git
 RUN git clone https://github.com/CorteXlab/cxlb-build-toolchain.git cxlb-build-toolchain.git
 
+# build toolchain (separate build steps to benefit from docker cache in case of build issues on a specific module)
 ENV BUILD="cxlb-build-toolchain.git/cxlb-build-toolchain -y /usr/bin/python3 -as"
 ENV PARMS="cxlb_toolchain_build /cortexlab/toolchains/current"
-
-# build toolchain (separate build steps to benefit from docker cache in case of build issues on a specific module)
-
 RUN ${APT} install udev
-
 RUN ${BUILD} uhd=master ${PARMS}
 RUN ${BUILD} uhd-firmware ${PARMS}
 RUN ${BUILD} gnuradio=maint-3.8 ${PARMS}
@@ -39,6 +35,11 @@ RUN ${BUILD} gr-iqbal=maint-3.8 ${PARMS}
 # activate toolchain configuration
 RUN /cortexlab/toolchains/current/bin/cxlb-toolchain-system-conf
 RUN echo source /cortexlab/toolchains/current/bin/cxlb-toolchain-user-conf >> /etc/profile
+RUN ln -s /cortexlab/toolchains/current/bin/cxlb-toolchain-user-conf /etc/profile.d/cxlb-toolchain-user-conf.sh
+# RUN sysctl -w net.core.wmem_max=2500000
 
 # remove toolchain sources
 #RUN rm -rf cxlb_toolchain_build/
+
+# the container's default executable: ssh daemon
+CMD [ "/usr/sbin/sshd", "-p", "2222", "-D" ]
