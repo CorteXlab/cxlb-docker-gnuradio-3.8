@@ -28,7 +28,7 @@ RUN ${APT} install udev
 RUN ${BUILD} uhd=master ${PARMS}
 RUN ${BUILD} uhd-firmware ${PARMS}
 RUN ${BUILD} gnuradio=maint-3.8 ${PARMS}
-RUN ${BUILD} gr-bokehgui=master ${PARMS}
+RUN ${BUILD} gr-bokehgui=maint-3.8 ${PARMS}
 RUN ${BUILD} gr-iqbal=maint-3.8 ${PARMS}
 # RUN ${BUILD} fft-web ${PARMS}
 
