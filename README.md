@@ -1,7 +1,7 @@
-cxlb-gnuradio-docker
-====================
+cxlb-docker-gnuradio-3.8
+========================
 
-Docker image with a GNURadio toolchain
+Docker image with a GNURadio-3.8 toolchain
 
 quick howto
 -----------
