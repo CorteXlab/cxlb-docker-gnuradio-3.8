@@ -2,6 +2,10 @@ FROM debian:buster
 
 ENV APT="apt-get -y"
 
+# pinning
+RUN echo "deb http://ftp.debian.org/debian/ bullseye main non-free contrib" >> /etc/apt/sources.list
+RUN echo "Package: *\nPin: release a=buster\nPin-Priority: 700\n\nPackage: *\nPin: release a=bullseye\nPin-Priority: -1" > /etc/apt/preferences.d/pinning
+
 RUN ${APT} update && ${APT} dist-upgrade
 
 WORKDIR /root
@@ -28,6 +32,7 @@ RUN ${APT} install udev
 RUN ${BUILD} uhd=master ${PARMS}
 RUN ${BUILD} uhd-firmware ${PARMS}
 RUN ${BUILD} gnuradio=maint-3.8 ${PARMS}
+RUN ${APT} install python3-pandas/bullseye
 RUN ${BUILD} gr-bokehgui=maint-3.8 ${PARMS}
 RUN ${BUILD} gr-iqbal=maint-3.8 ${PARMS}
 # RUN ${BUILD} fft-web ${PARMS}
