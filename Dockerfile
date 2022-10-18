@@ -37,6 +37,7 @@ RUN ${APT} install udev
 RUN ${BUILD} uhd=master ${PARMS}
 RUN ${BUILD} uhd-firmware ${PARMS}
 RUN ${BUILD} gnuradio=maint-3.8 ${PARMS}
+RUN ${APT} -t bookworm install nodejs
 RUN ${BUILD} gr-bokehgui=maint-3.8 ${PARMS}
 RUN ${BUILD} gr-iqbal=gr3.8 ${PARMS}
 # RUN ${BUILD} fft-web ${PARMS}
