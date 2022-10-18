@@ -1,10 +1,10 @@
-FROM debian:buster
+FROM debian:bullseye
 
 ENV APT="apt-get -y"
 
 # pinning
-RUN echo "deb http://ftp.debian.org/debian/ bullseye main non-free contrib" >> /etc/apt/sources.list
-RUN echo "Package: *\nPin: release a=buster\nPin-Priority: 700\n\nPackage: *\nPin: release a=bullseye\nPin-Priority: -1" > /etc/apt/preferences.d/pinning
+RUN echo "deb http://ftp.debian.org/debian/ bookworm main non-free contrib" >> /etc/apt/sources.list
+RUN echo "Package: *\nPin: release a=bullseye\nPin-Priority: 700\n\nPackage: *\nPin: release a=stable\nPin-Priority: 700\n\nPackage: *\nPin: release a=bookworm\nPin-Priority: -1\n\nPackage: *\nPin: release a=testing\nPin-Priority: -1" > /etc/apt/preferences.d/pinning
 
 RUN ${APT} update && ${APT} dist-upgrade
 
@@ -37,7 +37,6 @@ RUN ${APT} install udev
 RUN ${BUILD} uhd=master ${PARMS}
 RUN ${BUILD} uhd-firmware ${PARMS}
 RUN ${BUILD} gnuradio=maint-3.8 ${PARMS}
-RUN ${APT} install python3-pandas/bullseye
 RUN ${BUILD} gr-bokehgui=maint-3.8 ${PARMS}
 RUN ${BUILD} gr-iqbal=gr3.8 ${PARMS}
 # RUN ${BUILD} fft-web ${PARMS}
