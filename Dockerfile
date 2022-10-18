@@ -31,7 +31,7 @@ RUN ${APT} install git
 RUN git clone https://github.com/CorteXlab/cxlb-build-toolchain.git cxlb-build-toolchain.git
 
 # build toolchain (separate build steps to benefit from docker cache in case of build issues on a specific module)
-ENV BUILD="cxlb-build-toolchain.git/cxlb-build-toolchain -y /usr/bin/python3 -as"
+ENV BUILD="cxlb-build-toolchain.git/cxlb-build-toolchain -y /usr/bin/python3 -Oas"
 ENV PARMS="cxlb_toolchain_build /cortexlab/toolchains/current"
 RUN ${APT} install udev
 RUN ${BUILD} uhd=master ${PARMS}
